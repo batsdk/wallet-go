@@ -3,7 +3,9 @@ package main
 import (
 	"log"
 	"os"
+	"wallet-api-go-bc/handlers"
 	"wallet-api-go-bc/logging"
+	middlewares "wallet-api-go-bc/middleware"
 
 	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
@@ -30,12 +32,13 @@ func main() {
 
 	e := echo.New()
 	e.Use(middleware.Recover())
+	e.Use(middlewares.RequestLogger())
+	e.Use(middlewares.RateLimiter())
 
-
-	// e.POST("/wallets", handlers.CreateWallet)
-	// e.GET("/wallets/:id", handlers.GetWallet)
-	// e.POST("/wallets/:id/transactions", handlers.AddTransaction)
-	// e.GET("/wallets/:id/transactions", handlers.ListTransactions)
+	e.POST("/wallets", handlers.CreateWallet)
+	e.GET("/wallets/:id", handlers.GetWallet)
+	e.POST("/wallets/:id/transactions", handlers.AddTransaction)
+	e.GET("/wallets/:id/transactions", handlers.ListTransactions)
 
 	e.Logger.Fatal(e.Start(":"+port))
 }
